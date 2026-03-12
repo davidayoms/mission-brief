@@ -7,39 +7,82 @@
 <style>
 
 body{
-    background:black;
-    color:#00ff9c;
-    font-family: "Courier New", monospace;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    height:100vh;
-    margin:0;
+background:black;
+color:#00ff9c;
+font-family:"Courier New", monospace;
+margin:0;
+overflow:hidden;
 }
+
+/* START SCREEN */
+
+#startScreen{
+display:flex;
+flex-direction:column;
+justify-content:center;
+align-items:center;
+height:100vh;
+text-align:center;
+}
+
+button{
+background:black;
+border:2px solid #00ff9c;
+color:#00ff9c;
+font-size:22px;
+padding:15px 30px;
+cursor:pointer;
+font-family:"Courier New", monospace;
+}
+
+button:hover{
+background:#00ff9c;
+color:black;
+}
+
+/* TERMINAL */
 
 #terminal{
-    width:80%;
-    max-width:700px;
-    font-size:22px;
-    line-height:1.6;
+display:none;
+width:80%;
+max-width:800px;
+margin:100px auto;
+font-size:22px;
+line-height:1.6;
 }
 
-.cursor{
-    display:inline-block;
-    width:10px;
-    background:#00ff9c;
-    animation:blink 1s infinite;
+/* TOP TERMINAL BAR */
+
+#header{
+position:fixed;
+top:10px;
+left:20px;
+font-size:14px;
+color:#00ff9c;
 }
 
-@keyframes blink{
-    0%{opacity:0;}
-    50%{opacity:1;}
-    100%{opacity:0;}
+/* SCAN LINE EFFECT */
+
+.scanline{
+position:fixed;
+top:0;
+width:100%;
+height:2px;
+background:#00ff9c;
+animation:scan 4s linear infinite;
+opacity:.2;
 }
 
-.countdown{
-    font-size:40px;
-    margin-top:20px;
+@keyframes scan{
+0%{top:0}
+100%{top:100%}
+}
+
+/* COUNTDOWN */
+
+#countdown{
+font-size:40px;
+margin-top:20px;
 }
 
 </style>
@@ -47,15 +90,35 @@ body{
 
 <body>
 
-<div id="terminal">
-<div id="text"></div>
-<div id="countdown" class="countdown"></div>
+<div id="startScreen">
+
+<h1>IMF Secure Channel</h1>
+
+<p>Classified Transmission Ready</p>
+
+<button onclick="startMission()">BEGIN MISSION</button>
+
 </div>
 
-<!-- Optional background music -->
-<audio autoplay loop>
-<source src="mission.mp3" type="audio/mpeg">
-</audio>
+<div id="header">
+IMF Secure Channel — Level 7 Clearance
+</div>
+
+<div class="scanline"></div>
+
+<div id="terminal">
+
+<div id="text"></div>
+
+<div id="countdown"></div>
+
+</div>
+
+<!-- AUDIO -->
+
+<audio id="music" src="mission.mp3" loop></audio>
+<audio id="typingSound" src="typing.mp3"></audio>
+<audio id="explosionSound" src="explosion.mp3"></audio>
 
 <script>
 
@@ -94,8 +157,23 @@ const lines = [
 
 let i=0;
 let j=0;
-let currentLine="";
 let speed=40;
+
+/* START MISSION */
+
+function startMission(){
+
+document.getElementById("startScreen").style.display="none";
+
+document.getElementById("terminal").style.display="block";
+
+document.getElementById("music").play();
+
+typeWriter();
+
+}
+
+/* TYPEWRITER */
 
 function typeWriter(){
 
@@ -103,26 +181,34 @@ if(i < lines.length){
 
 if(j < lines[i].length){
 
-currentLine += lines[i].charAt(j);
 document.getElementById("text").innerHTML += lines[i].charAt(j);
+
+let typing=document.getElementById("typingSound");
+
+typing.currentTime=0;
+
+typing.play();
+
 j++;
 
-setTimeout(typeWriter, speed);
+setTimeout(typeWriter,speed);
 
 }
 
 else{
 
 document.getElementById("text").innerHTML += "<br>";
+
 i++;
+
 j=0;
-currentLine="";
 
-setTimeout(typeWriter, 600);
+setTimeout(typeWriter,500);
+
+}
 
 }
 
-}
 else{
 
 startCountdown();
@@ -131,31 +217,33 @@ startCountdown();
 
 }
 
+/* COUNTDOWN */
+
 function startCountdown(){
 
-let count = 5;
+let count=5;
 
-const countdownEl = document.getElementById("countdown");
+let countdownEl=document.getElementById("countdown");
 
-const timer = setInterval(function(){
+let timer=setInterval(function(){
 
-countdownEl.innerHTML = count;
+countdownEl.innerHTML=count;
 
 count--;
 
-if(count < 0){
+if(count<0){
 
 clearInterval(timer);
 
-document.body.innerHTML = "<h1 style='color:red;text-align:center;'>TRANSMISSION TERMINATED</h1>";
+document.getElementById("explosionSound").play();
+
+document.body.innerHTML="<h1 style='color:red;text-align:center;margin-top:40vh;font-family:Courier New;'>TRANSMISSION TERMINATED</h1>";
 
 }
 
 },1000);
 
 }
-
-typeWriter();
 
 </script>
 
