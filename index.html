@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Classified Mission Brief</title>
 
 <style>
@@ -23,6 +24,7 @@ overflow:hidden;
 #startScreen{
 position:absolute;
 text-align:center;
+padding:20px;
 }
 
 button{
@@ -34,12 +36,12 @@ color:#00ff9c;
 cursor:pointer;
 }
 
-/* FRAME */
+/* FRAME — responsive */
 
 #frame{
 display:none;
-width:900px;
-height:560px;
+width:min(900px, 100vw);
+height:min(560px, 100vh);
 border:6px solid #00ff9c;
 box-shadow:0 0 40px #00ff9c;
 position:relative;
@@ -85,6 +87,7 @@ font-size:14px;
 color:#00ff9c;
 text-align:center;
 z-index:5;
+box-sizing:border-box;
 }
 
 /* IMAGE AREA */
@@ -108,13 +111,14 @@ transform:translateX(0);
 position:absolute;
 bottom:0;
 width:100%;
-padding:22px;
-font-size:30px;
+padding:16px;
+font-size:clamp(16px, 3vw, 30px);
 font-weight:bold;
 text-align:center;
 background:rgba(0,0,0,0.85);
 text-shadow:0 0 15px #00ff9c;
 z-index:6;
+box-sizing:border-box;
 }
 
 /* MAP */
@@ -143,19 +147,22 @@ display:none;
 justify-content:center;
 align-items:center;
 flex-direction:column;
-gap:30px;
+gap:20px;
 z-index:4;
+padding:20px;
+box-sizing:border-box;
 }
 
 .card{
-width:450px;
+width:min(450px, 90%);
 background:#001a12;
 border:3px solid #00ff9c;
-padding:25px;
+padding:20px;
 color:#00ff9c;
 box-shadow:0 0 20px #00ff9c;
 transform:translateX(100%);
 transition:transform 1s ease;
+box-sizing:border-box;
 }
 
 .card.active{
@@ -169,8 +176,8 @@ position:absolute;
 top:50%;
 left:50%;
 transform:translate(-50%,-50%);
-width:220px;
-height:220px;
+width:min(220px, 50vw);
+height:min(220px, 50vw);
 border-radius:50%;
 border:6px solid red;
 display:none;
@@ -182,21 +189,41 @@ z-index:10;
 }
 
 #bombTimer{
-font-size:60px;
+font-size:clamp(40px, 10vw, 60px);
 color:red;
 }
 
 #fuse{
 width:6px;
-height:120px;
+height:80px;
 background:orange;
 margin-bottom:10px;
 animation:fuseburn 5s linear forwards;
 }
 
 @keyframes fuseburn{
-0%{height:120px}
+0%{height:80px}
 100%{height:0}
+}
+
+/* SOUND NOTICE */
+
+#soundNotice{
+position:absolute;
+bottom:80px;
+width:100%;
+text-align:center;
+font-size:13px;
+color:rgba(0,255,156,0.6);
+z-index:20;
+letter-spacing:0.1em;
+display:none;
+animation:noticePulse 1.5s ease-in-out infinite;
+}
+
+@keyframes noticePulse{
+0%,100%{opacity:0.4}
+50%{opacity:1}
 }
 
 </style>
@@ -205,227 +232,200 @@ animation:fuseburn 5s linear forwards;
 <body>
 
 <div id="startScreen">
-
-<h1>IMF Secure Channel</h1>
-<p>Classified Transmission Ready</p>
-
-<button onclick="startMission()">BEGIN MISSION</button>
-
+  <h1>IMF Secure Channel</h1>
+  <p>Classified Transmission Ready</p>
+  <button onclick="startMission()">BEGIN MISSION</button>
 </div>
-
 
 <div id="frame">
 
-<div id="topBar">
-IMF Secure Channel — Level 7 Clearance
-</div>
+  <div id="topBar">IMF Secure Channel — Level 7 Clearance</div>
 
-<div id="mapContainer">
-<iframe src="https://maps.google.com/maps?q=6.5244,3.3792&z=14&output=embed"></iframe>
-</div>
+  <div id="mapContainer">
+    <iframe src="https://maps.google.com/maps?q=6.5244,3.3792&z=14&output=embed"></iframe>
+  </div>
 
+  <div id="dossier">
+    <div class="card">
+      <h2>AGENT PROFILE</h2>
+      <p><b>Name:</b> Ayomide</p>
+      <p><b>Codename:</b> The Joy Architect</p>
+      <p><b>Specialty:</b> Party Engineering</p>
+      <p><b>Threat Level:</b> EXTREME FUN</p>
+    </div>
+    <div class="card">
+      <h2>AGENT PROFILE</h2>
+      <p><b>Name:</b> Dumebi</p>
+      <p><b>Codename:</b> Celebration Catalyst</p>
+      <p><b>Specialty:</b> Dance Floor Control</p>
+      <p><b>Threat Level:</b> MAXIMUM JOY</p>
+    </div>
+  </div>
 
-<div id="dossier">
+  <div id="imageArea"></div>
+  <div id="subtitle"></div>
+  <div id="soundNotice">🔊 TAP ANYWHERE TO UNMUTE</div>
 
-<div class="card">
-<h2>AGENT PROFILE</h2>
-<p><b>Name:</b> Ayomide</p>
-<p><b>Codename:</b> The Joy Architect</p>
-<p><b>Specialty:</b> Party Engineering</p>
-<p><b>Threat Level:</b> EXTREME FUN</p>
-</div>
-
-<div class="card">
-<h2>AGENT PROFILE</h2>
-<p><b>Name:</b> Dumebi</p>
-<p><b>Codename:</b> Celebration Catalyst</p>
-<p><b>Specialty:</b> Dance Floor Control</p>
-<p><b>Threat Level:</b> MAXIMUM JOY</p>
-</div>
-
-</div>
-
-
-<div id="imageArea"></div>
-<div id="subtitle"></div>
-
-<div id="bomb">
-<div id="fuse"></div>
-<div id="bombTimer">5</div>
-</div>
+  <div id="bomb">
+    <div id="fuse"></div>
+    <div id="bombTimer">5</div>
+  </div>
 
 </div>
-
 
 <audio id="music" src="mission.mp3" loop preload="auto"></audio>
 <audio id="typing" src="typing.wav" preload="auto"></audio>
 <audio id="explosion" src="explosion.wav" preload="auto"></audio>
 
-
 <script>
 
-const images=["host1.jpg","host2.jpg","party.jpg"];
+const images = ["host1.jpg","host2.jpg","party.jpg"];
 
-const script=[
-"Good evening Agent.",
-"Our intelligence has identified two individuals.",
-"Ayomide and Dumebi.",
-"They are among the world's most powerful Joy Givers.",
-"It has come to the attention of the agency...",
-"that they plan to reveal their secret weapons",
-"at a private gathering.",
-"Your mission, should you choose to accept it...",
-"is to infiltrate the party.",
-"Blend in with other agents.",
-"And have an unreasonable amount of fun.",
-"Prepare for self destruct."
+const script = [
+  "Good evening Agent.",
+  "Our intelligence has identified two individuals.",
+  "Ayomide and Dumebi.",
+  "They are among the world's most powerful Joy Givers.",
+  "It has come to the attention of the agency...",
+  "that they plan to reveal their secret weapons",
+  "at a private gathering.",
+  "Your mission, should you choose to accept it...",
+  "is to infiltrate the party.",
+  "Blend in with other agents.",
+  "And have an unreasonable amount of fun.",
+  "Prepare for self destruct."
 ];
 
-let lineIndex=0;
-let imageIndex=0;
+let lineIndex    = 0;
+let imageIndex   = 0;
+let audioUnlocked = false;
 
-const subtitle=document.getElementById("subtitle");
-const imageArea=document.getElementById("imageArea");
-const music=document.getElementById("music");
-const typing=document.getElementById("typing");
-const explosion=document.getElementById("explosion");
+const subtitle  = document.getElementById("subtitle");
+const imageArea = document.getElementById("imageArea");
+const music     = document.getElementById("music");
+const typing    = document.getElementById("typing");
+const explosion = document.getElementById("explosion");
+const notice    = document.getElementById("soundNotice");
 
-function startMission(){
+// ── UNLOCK AUDIO ON ANY TAP ──────────────────────────────
+// Mobile browsers block audio until a real user gesture happens.
+// Tapping anywhere on the frame silently unlocks all three files.
+function unlockAudio() {
+  if (audioUnlocked) return;
+  audioUnlocked = true;
+  notice.style.display = "none";
 
-document.getElementById("startScreen").style.display="none";
-document.getElementById("frame").style.display="block";
+  // Resume music if it was blocked
+  music.play().catch(() => {});
 
-music.currentTime=0;
-music.play().catch(()=>{});
-
-showMap();
-
+  // Unlock the sound effects by play+pause
+  [typing, explosion].forEach(el => {
+    el.play().then(() => el.pause()).catch(() => {});
+  });
 }
 
-/* MAP */
+document.getElementById("frame").addEventListener("click",      unlockAudio, { passive: true });
+document.getElementById("frame").addEventListener("touchstart", unlockAudio, { passive: true });
 
-function showMap(){
+// ── START ────────────────────────────────────────────────
+function startMission() {
+  document.getElementById("startScreen").style.display = "none";
+  document.getElementById("frame").style.display = "block";
 
-document.getElementById("mapContainer").style.display="block";
-subtitle.innerText="Locating target location...";
+  music.currentTime = 0;
+  music.play().catch(() => {
+    // Browser blocked autoplay — show the tap notice
+    notice.style.display = "block";
+  });
 
-setTimeout(()=>{
-subtitle.innerText="Target confirmed.";
-
-setTimeout(()=>{
-document.getElementById("mapContainer").style.display="none";
-showDossier();
-},3000);
-
-},3000);
-
+  showMap();
 }
 
-/* DOSSIER */
+// ── MAP ──────────────────────────────────────────────────
+function showMap() {
+  document.getElementById("mapContainer").style.display = "block";
+  subtitle.innerText = "Locating target location...";
 
-function showDossier(){
-
-document.getElementById("dossier").style.display="flex";
-const cards=document.querySelectorAll(".card");
-
-let index=0;
-
-function nextCard(){
-
-if(index < cards.length){
-
-cards[index].classList.add("active");
-subtitle.innerText="Displaying classified agent file...";
-index++;
-
-setTimeout(nextCard,4000);
-
-}else{
-
-setTimeout(()=>{
-document.getElementById("dossier").style.display="none";
-playScene();
-},3000);
-
+  setTimeout(() => {
+    subtitle.innerText = "Target confirmed.";
+    setTimeout(() => {
+      document.getElementById("mapContainer").style.display = "none";
+      showDossier();
+    }, 3000);
+  }, 3000);
 }
 
+// ── DOSSIER ──────────────────────────────────────────────
+function showDossier() {
+  document.getElementById("dossier").style.display = "flex";
+  const cards = document.querySelectorAll(".card");
+  let index = 0;
+
+  function nextCard() {
+    if (index < cards.length) {
+      cards[index].classList.add("active");
+      subtitle.innerText = "Displaying classified agent file...";
+      index++;
+      setTimeout(nextCard, 4000);
+    } else {
+      setTimeout(() => {
+        document.getElementById("dossier").style.display = "none";
+        playScene();
+      }, 3000);
+    }
+  }
+
+  nextCard();
 }
 
-nextCard();
+// ── SLIDES ───────────────────────────────────────────────
+function playScene() {
+  if (lineIndex < script.length) {
+    subtitle.innerText = script[lineIndex];
 
+    typing.currentTime = 0;
+    typing.play().catch(() => {});
+
+    imageArea.classList.remove("active");
+    setTimeout(() => {
+      imageArea.style.backgroundImage = "url('" + images[imageIndex] + "')";
+      imageArea.classList.add("active");
+    }, 300);
+
+    lineIndex++;
+    imageIndex = (imageIndex + 1) % images.length;
+    setTimeout(playScene, 4000);
+
+  } else {
+    startBomb();
+  }
 }
 
-/* SLIDES */
+// ── BOMB ─────────────────────────────────────────────────
+function startBomb() {
+  subtitle.innerText = "This message will self destruct";
+  document.getElementById("bomb").style.display = "flex";
 
-function playScene(){
+  let count = 5;
 
-if(lineIndex < script.length){
+  const timer = setInterval(() => {
+    document.getElementById("bombTimer").innerText = count;
+    count--;
 
-subtitle.innerText=script[lineIndex];
+    if (count < 0) {
+      clearInterval(timer);
+      document.getElementById("frame").classList.add("shake");
 
-typing.currentTime=0;
-typing.play().catch(()=>{});
-
-imageArea.classList.remove("active");
-
-setTimeout(()=>{
-
-imageArea.style.backgroundImage="url('"+images[imageIndex]+"')";
-imageArea.classList.add("active");
-
-},300);
-
-lineIndex++;
-imageIndex=(imageIndex+1)%images.length;
-
-setTimeout(playScene,4000);
-
-}else{
-
-startBomb();
-
-}
-
-}
-
-/* BOMB */
-
-function startBomb(){
-
-subtitle.innerText="This message will self destruct";
-document.getElementById("bomb").style.display="flex";
-
-let count=5;
-
-const timer=setInterval(()=>{
-
-document.getElementById("bombTimer").innerText=count;
-count--;
-
-if(count<0){
-
-clearInterval(timer);
-
-document.getElementById("frame").classList.add("shake");
-
-setTimeout(()=>{
-
-explosion.currentTime=0;
-explosion.play();
-
-document.getElementById("frame").classList.add("destroy");
-
-subtitle.innerText="TRANSMISSION TERMINATED";
-
-},600);
-
-}
-
-},1000);
-
+      setTimeout(() => {
+        explosion.currentTime = 0;
+        explosion.play().catch(() => {});
+        document.getElementById("frame").classList.add("destroy");
+        subtitle.innerText = "TRANSMISSION TERMINATED";
+      }, 600);
+    }
+  }, 1000);
 }
 
 </script>
-
 </body>
 </html>
