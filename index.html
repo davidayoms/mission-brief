@@ -15,6 +15,7 @@ justify-content:center;
 align-items:center;
 height:100vh;
 color:white;
+overflow:hidden;
 }
 
 /* START SCREEN */
@@ -33,11 +34,6 @@ color:#00ff9c;
 cursor:pointer;
 }
 
-button:hover{
-background:#00ff9c;
-color:black;
-}
-
 /* FRAME */
 
 #frame{
@@ -49,6 +45,32 @@ box-shadow:0 0 40px #00ff9c;
 position:relative;
 background:black;
 overflow:hidden;
+}
+
+/* SHAKE EFFECT */
+
+.shake{
+animation:shake 0.4s infinite;
+}
+
+@keyframes shake{
+0%{transform:translate(0)}
+25%{transform:translate(5px,5px)}
+50%{transform:translate(-5px,5px)}
+75%{transform:translate(5px,-5px)}
+100%{transform:translate(0)}
+}
+
+/* DESTROY EFFECT */
+
+.destroy{
+animation:destroy 1.5s forwards;
+}
+
+@keyframes destroy{
+0%{opacity:1;transform:scale(1)}
+50%{opacity:1;transform:scale(1.2)}
+100%{opacity:0;transform:scale(0)}
 }
 
 /* TOP BAR */
@@ -198,116 +220,65 @@ animation:fuseburn 5s linear forwards;
 IMF Secure Channel — Level 7 Clearance
 </div>
 
-
-<!-- MAP -->
-
 <div id="mapContainer">
-
-<iframe
-src="https://maps.google.com/maps?q=6.5244,3.3792&z=14&output=embed">
-</iframe>
-
+<iframe src="https://maps.google.com/maps?q=6.5244,3.3792&z=14&output=embed"></iframe>
 </div>
 
-
-<!-- DOSSIER -->
 
 <div id="dossier">
 
 <div class="card">
-
 <h2>AGENT PROFILE</h2>
-
 <p><b>Name:</b> Ayomide</p>
-
 <p><b>Codename:</b> The Joy Architect</p>
-
 <p><b>Specialty:</b> Party Engineering</p>
-
 <p><b>Threat Level:</b> EXTREME FUN</p>
-
 </div>
 
 <div class="card">
-
 <h2>AGENT PROFILE</h2>
-
 <p><b>Name:</b> Dumebi</p>
-
-<p><b>Codename:</b> The Celebration Catalyst</p>
-
+<p><b>Codename:</b> Celebration Catalyst</p>
 <p><b>Specialty:</b> Dance Floor Control</p>
-
 <p><b>Threat Level:</b> MAXIMUM JOY</p>
-
 </div>
 
 </div>
 
-
-<!-- IMAGE AREA -->
 
 <div id="imageArea"></div>
-
 <div id="subtitle"></div>
 
-
-<!-- BOMB -->
-
 <div id="bomb">
-
 <div id="fuse"></div>
-
 <div id="bombTimer">5</div>
-
 </div>
 
 </div>
 
 
-<!-- AUDIO -->
-
-<audio id="music" src="mission.mp3" loop></audio>
-<audio id="typing" src="typing.wav"></audio>
-<audio id="explosion" src="explosion.wav"></audio>
+<audio id="music" src="mission.mp3" loop preload="auto"></audio>
+<audio id="typing" src="typing.wav" preload="auto"></audio>
+<audio id="explosion" src="explosion.wav" preload="auto"></audio>
 
 
 <script>
 
-const images=[
-
-"host1.jpg",
-"host2.jpg",
-"party.jpg"
-
-];
+const images=["host1.jpg","host2.jpg","party.jpg"];
 
 const script=[
-
 "Good evening Agent.",
-
 "Our intelligence has identified two individuals.",
-
 "Ayomide and Dumebi.",
-
 "They are among the world's most powerful Joy Givers.",
-
 "It has come to the attention of the agency...",
-
 "that they plan to reveal their secret weapons",
-
 "at a private gathering.",
-
 "Your mission, should you choose to accept it...",
-
 "is to infiltrate the party.",
-
 "Blend in with other agents.",
-
 "And have an unreasonable amount of fun.",
-
 "Prepare for self destruct."
-
 ];
 
 let lineIndex=0;
@@ -315,51 +286,46 @@ let imageIndex=0;
 
 const subtitle=document.getElementById("subtitle");
 const imageArea=document.getElementById("imageArea");
-
+const music=document.getElementById("music");
+const typing=document.getElementById("typing");
+const explosion=document.getElementById("explosion");
 
 function startMission(){
 
 document.getElementById("startScreen").style.display="none";
 document.getElementById("frame").style.display="block";
 
-document.getElementById("music").play();
+music.currentTime=0;
+music.play().catch(()=>{});
 
 showMap();
 
 }
-
 
 /* MAP */
 
 function showMap(){
 
 document.getElementById("mapContainer").style.display="block";
-
 subtitle.innerText="Locating target location...";
 
 setTimeout(()=>{
-
 subtitle.innerText="Target confirmed.";
 
 setTimeout(()=>{
-
 document.getElementById("mapContainer").style.display="none";
-
 showDossier();
-
 },3000);
 
 },3000);
 
 }
 
-
 /* DOSSIER */
 
 function showDossier(){
 
 document.getElementById("dossier").style.display="flex";
-
 const cards=document.querySelectorAll(".card");
 
 let index=0;
@@ -369,23 +335,16 @@ function nextCard(){
 if(index < cards.length){
 
 cards[index].classList.add("active");
-
 subtitle.innerText="Displaying classified agent file...";
-
 index++;
 
 setTimeout(nextCard,4000);
 
-}
-
-else{
+}else{
 
 setTimeout(()=>{
-
 document.getElementById("dossier").style.display="none";
-
 playScene();
-
 },3000);
 
 }
@@ -396,7 +355,6 @@ nextCard();
 
 }
 
-
 /* SLIDES */
 
 function playScene(){
@@ -405,8 +363,8 @@ if(lineIndex < script.length){
 
 subtitle.innerText=script[lineIndex];
 
-document.getElementById("typing").currentTime=0;
-document.getElementById("typing").play();
+typing.currentTime=0;
+typing.play().catch(()=>{});
 
 imageArea.classList.remove("active");
 
@@ -418,14 +376,11 @@ imageArea.classList.add("active");
 },300);
 
 lineIndex++;
-
 imageIndex=(imageIndex+1)%images.length;
 
 setTimeout(playScene,4000);
 
-}
-
-else{
+}else{
 
 startBomb();
 
@@ -433,32 +388,36 @@ startBomb();
 
 }
 
-
 /* BOMB */
 
 function startBomb(){
 
 subtitle.innerText="This message will self destruct";
-
 document.getElementById("bomb").style.display="flex";
 
 let count=5;
 
-const timer=setInterval(function(){
+const timer=setInterval(()=>{
 
 document.getElementById("bombTimer").innerText=count;
-
 count--;
 
 if(count<0){
 
 clearInterval(timer);
 
-document.getElementById("explosion").play();
+document.getElementById("frame").classList.add("shake");
+
+setTimeout(()=>{
+
+explosion.currentTime=0;
+explosion.play();
+
+document.getElementById("frame").classList.add("destroy");
 
 subtitle.innerText="TRANSMISSION TERMINATED";
 
-document.getElementById("bomb").style.display="none";
+},600);
 
 }
 
