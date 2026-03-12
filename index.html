@@ -7,32 +7,34 @@
 <style>
 
 body{
-background:black;
-color:#00ff9c;
-font-family:"Courier New", monospace;
 margin:0;
+background:black;
+color:white;
+font-family:Arial, sans-serif;
 overflow:hidden;
 }
 
 /* START SCREEN */
 
 #startScreen{
+position:absolute;
+width:100%;
+height:100vh;
 display:flex;
 flex-direction:column;
 justify-content:center;
 align-items:center;
-height:100vh;
-text-align:center;
+background:black;
+z-index:10;
 }
 
 button{
-background:black;
-border:2px solid #00ff9c;
-color:#00ff9c;
+padding:18px 40px;
 font-size:22px;
-padding:15px 30px;
+background:black;
+color:#00ff9c;
+border:2px solid #00ff9c;
 cursor:pointer;
-font-family:"Courier New", monospace;
 }
 
 button:hover{
@@ -40,55 +42,47 @@ background:#00ff9c;
 color:black;
 }
 
-/* TERMINAL */
+/* SLIDESHOW */
 
-#terminal{
-display:none;
-width:80%;
-max-width:800px;
-margin:100px auto;
-font-size:22px;
-line-height:1.6;
-}
-
-/* TOP TERMINAL BAR */
-
-#header{
-position:fixed;
-top:10px;
-left:20px;
-font-size:14px;
-color:#00ff9c;
-}
-
-/* SCAN LINE EFFECT */
-
-.scanline{
-position:fixed;
-top:0;
+#slideshow{
+position:relative;
 width:100%;
-height:2px;
-background:#00ff9c;
-animation:scan 4s linear infinite;
-opacity:.2;
+height:100vh;
+display:none;
 }
 
-@keyframes scan{
-0%{top:0}
-100%{top:100%}
+.slide{
+position:absolute;
+width:100%;
+height:100%;
+background-size:cover;
+background-position:center;
+opacity:0;
+transition:opacity 2s;
 }
 
-/* COUNTDOWN */
+.slide.active{
+opacity:1;
+}
 
-#countdown{
-font-size:40px;
-margin-top:20px;
+/* SUBTITLES */
+
+#subtitle{
+position:absolute;
+bottom:50px;
+width:100%;
+text-align:center;
+font-size:32px;
+padding:20px;
+background:rgba(0,0,0,0.6);
 }
 
 </style>
 </head>
 
 <body>
+
+<!-- START SCREEN -->
 
 <div id="startScreen">
 
@@ -100,112 +94,100 @@ margin-top:20px;
 
 </div>
 
-<div id="header">
-IMF Secure Channel — Level 7 Clearance
+
+<!-- SLIDES -->
+
+<div id="slideshow">
+
+<div class="slide active" style="background-image:url('host1.jpg')"></div>
+
+<div class="slide" style="background-image:url('host2.jpg')"></div>
+
+<div class="slide" style="background-image:url('party.jpg')"></div>
+
+<div id="subtitle"></div>
+
 </div>
 
-<div class="scanline"></div>
-
-<div id="terminal">
-
-<div id="text"></div>
-
-<div id="countdown"></div>
-
-</div>
 
 <!-- AUDIO -->
 
 <audio id="music" src="mission.mp3" loop></audio>
-<audio id="typingSound" src="typing.mp3"></audio>
-<audio id="explosionSound" src="explosion.mp3"></audio>
+
+<audio id="typing" src="typing.wav"></audio>
+
+<audio id="explosion" src="explosion.wav"></audio>
+
 
 <script>
 
-const lines = [
+const slides = document.querySelectorAll(".slide");
 
-"INCOMING TRANSMISSION...",
-"",
-"Good evening, Agent.",
-"",
-"Intelligence from the agency has revealed unusual activity involving two individuals known as Ayomide and Dumebi.",
-"",
-"These individuals are believed to be among the world's top JOY GIVERS.",
-"",
-"It has come to the attention of the agency that they plan to reveal their secret weapons to the highest bidders at a private event.",
-"",
-"MISSION LOCATION: [Your Address]",
-"DATE: [Your Date]",
-"TIME: [Your Time]",
-"",
+const subtitle = document.getElementById("subtitle");
+
+let slideIndex = 0;
+
+/* SCRIPT LINES */
+
+const script = [
+
+"Good evening Agent.",
+
+"Our intelligence has identified two individuals.",
+
+"Ayomide and Dumebi.",
+
+"They are among the world's most powerful Joy Givers.",
+
+"It has come to the attention of the agency...",
+
+"that they plan to reveal their secret weapons",
+
+"at a private gathering.",
+
 "Your mission, should you choose to accept it...",
-"",
-"is to INFILTRATE the party, blend in with other agents,",
-"and gather intelligence while having an unreasonable amount of fun.",
-"",
-"Primary Objectives:",
-"- Dance when necessary",
-"- Eat when possible",
-"- Laugh without restraint",
-"",
-"Warning:",
-"Exposure to the hosts may result in uncontrollable joy.",
-"",
+
+"is to infiltrate the party.",
+
+"Blend in with other agents.",
+
+"And have an unreasonable amount of fun.",
+
 "This message will self destruct in 5 seconds."
 
 ];
 
-let i=0;
-let j=0;
-let speed=40;
+let lineIndex = 0;
 
-/* START MISSION */
+/* START */
 
 function startMission(){
 
 document.getElementById("startScreen").style.display="none";
 
-document.getElementById("terminal").style.display="block";
+document.getElementById("slideshow").style.display="block";
 
 document.getElementById("music").play();
 
-typeWriter();
+playScene();
 
 }
 
-/* TYPEWRITER */
+/* PLAY SCENE */
 
-function typeWriter(){
+function playScene(){
 
-if(i < lines.length){
+if(lineIndex < script.length){
 
-if(j < lines[i].length){
+subtitle.innerText = script[lineIndex];
 
-document.getElementById("text").innerHTML += lines[i].charAt(j);
+document.getElementById("typing").currentTime=0;
 
-let typing=document.getElementById("typingSound");
+document.getElementById("typing").play();
 
-typing.currentTime=0;
+lineIndex++;
 
-typing.play();
-
-j++;
-
-setTimeout(typeWriter,speed);
-
-}
-
-else{
-
-document.getElementById("text").innerHTML += "<br>";
-
-i++;
-
-j=0;
-
-setTimeout(typeWriter,500);
-
-}
+setTimeout(nextSlide,3500);
 
 }
 
@@ -217,27 +199,39 @@ startCountdown();
 
 }
 
+/* SLIDE CHANGE */
+
+function nextSlide(){
+
+slides[slideIndex].classList.remove("active");
+
+slideIndex = (slideIndex + 1) % slides.length;
+
+slides[slideIndex].classList.add("active");
+
+playScene();
+
+}
+
 /* COUNTDOWN */
 
 function startCountdown(){
 
-let count=5;
+let count = 5;
 
-let countdownEl=document.getElementById("countdown");
+const timer = setInterval(function(){
 
-let timer=setInterval(function(){
-
-countdownEl.innerHTML=count;
+subtitle.innerText = "This message will self destruct in " + count;
 
 count--;
 
-if(count<0){
+if(count < 0){
 
 clearInterval(timer);
 
-document.getElementById("explosionSound").play();
+document.getElementById("explosion").play();
 
-document.body.innerHTML="<h1 style='color:red;text-align:center;margin-top:40vh;font-family:Courier New;'>TRANSMISSION TERMINATED</h1>";
+subtitle.innerText="TRANSMISSION TERMINATED";
 
 }
 
