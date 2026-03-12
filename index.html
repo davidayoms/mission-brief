@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Classified Mission Briefing</title>
+
+<style>
+
+body{
+    background:black;
+    color:#00ff9c;
+    font-family: "Courier New", monospace;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+    margin:0;
+}
+
+#terminal{
+    width:80%;
+    max-width:700px;
+    font-size:22px;
+    line-height:1.6;
+}
+
+.cursor{
+    display:inline-block;
+    width:10px;
+    background:#00ff9c;
+    animation:blink 1s infinite;
+}
+
+@keyframes blink{
+    0%{opacity:0;}
+    50%{opacity:1;}
+    100%{opacity:0;}
+}
+
+.countdown{
+    font-size:40px;
+    margin-top:20px;
+}
+
+</style>
+</head>
+
+<body>
+
+<div id="terminal">
+<div id="text"></div>
+<div id="countdown" class="countdown"></div>
+</div>
+
+<!-- Optional background music -->
+<audio autoplay loop>
+<source src="mission.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+
+const lines = [
+
+"INCOMING TRANSMISSION...",
+"",
+"Good evening, Agent.",
+"",
+"Intelligence from the agency has revealed unusual activity involving two individuals known as Ayomide and Dumebi.",
+"",
+"These individuals are believed to be among the world's top JOY GIVERS.",
+"",
+"It has come to the attention of the agency that they plan to reveal their secret weapons to the highest bidders at a private event.",
+"",
+"MISSION LOCATION: [Your Address]",
+"DATE: [Your Date]",
+"TIME: [Your Time]",
+"",
+"Your mission, should you choose to accept it...",
+"",
+"is to INFILTRATE the party, blend in with other agents,",
+"and gather intelligence while having an unreasonable amount of fun.",
+"",
+"Primary Objectives:",
+"- Dance when necessary",
+"- Eat when possible",
+"- Laugh without restraint",
+"",
+"Warning:",
+"Exposure to the hosts may result in uncontrollable joy.",
+"",
+"This message will self destruct in 5 seconds."
+
+];
+
+let i=0;
+let j=0;
+let currentLine="";
+let speed=40;
+
+function typeWriter(){
+
+if(i < lines.length){
+
+if(j < lines[i].length){
+
+currentLine += lines[i].charAt(j);
+document.getElementById("text").innerHTML += lines[i].charAt(j);
+j++;
+
+setTimeout(typeWriter, speed);
+
+}
+
+else{
+
+document.getElementById("text").innerHTML += "<br>";
+i++;
+j=0;
+currentLine="";
+
+setTimeout(typeWriter, 600);
+
+}
+
+}
+else{
+
+startCountdown();
+
+}
+
+}
+
+function startCountdown(){
+
+let count = 5;
+
+const countdownEl = document.getElementById("countdown");
+
+const timer = setInterval(function(){
+
+countdownEl.innerHTML = count;
+
+count--;
+
+if(count < 0){
+
+clearInterval(timer);
+
+document.body.innerHTML = "<h1 style='color:red;text-align:center;'>TRANSMISSION TERMINATED</h1>";
+
+}
+
+},1000);
+
+}
+
+typeWriter();
+
+</script>
+
+</body>
+</html>
